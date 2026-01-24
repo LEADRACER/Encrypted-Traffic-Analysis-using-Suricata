@@ -1,10 +1,10 @@
-# Encrypted-Traffic-Analysis-using-Suricata
+# Encrypted-Traffic-Analysis-using-Suricata-and-Wireshark
 
 ## Overview
 This project implements a **fully automated encrypted traffic analysis pipeline** using **Python scripts**, **TShark**, and **Suricata IDS**.
 
 All major tasks are handled programmatically:
-1. Network traffic is captured using TShark via Python.
+1. Network traffic is captured using Wireshark/TShark via Python.
 2. The captured PCAP is analyzed using Suricata, triggered by Python.
 3. Suricata logs are parsed and analyzed using Python scripts.
 4. A central controller script manages and coordinates the entire workflow.
@@ -14,7 +14,7 @@ Since encrypted traffic does not allow payload inspection, the analysis is based
 ---
 
 ## Key Features
-- Fully automated traffic capture using TShark (via Python)
+- Fully automated traffic capture using Wireshark/TShark (via Python)
 - Programmatic execution of Suricata on captured traffic
 - Encrypted traffic analysis without decryption
 - Python-based parsing and behavioral analysis of Suricata logs
@@ -25,7 +25,7 @@ Since encrypted traffic does not allow payload inspection, the analysis is based
 
 ## Tech Stack
 - **Python 3** – Automation, orchestration, and analysis
-- **TShark** – Network traffic capture
+- **Wireshark/TShark** – Network traffic capture
 - **Suricata** – Intrusion Detection System
 - **TLS/SSL Metadata Analysis** – JA3, SNI, certificate information
 - **Linux** – Execution and testing environment
