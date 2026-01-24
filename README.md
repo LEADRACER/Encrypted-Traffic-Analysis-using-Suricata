@@ -105,11 +105,11 @@ The workflow of this project is designed as a **script-driven automated pipeline
 
 Controller Script (controller.py)  
 ↓  
-Traffic Capture Script (capture_traffic.py)  
+Traffic Capture Script (wireshark_capture.py)  
 ↓  
-Suricata Execution Script (run_suricata.py)  
+Suricata Execution Script (suricata_run.py)  
 ↓  
-Log Analysis Script (analyze_logs.py)
+Log Analysis Script (analysis.py)
 
 ---
 
