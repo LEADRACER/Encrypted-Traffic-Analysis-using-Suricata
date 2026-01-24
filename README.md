@@ -1,68 +1,182 @@
 # Encrypted-Traffic-Analysis-using-Suricata
 
 ## Overview
-This project focuses on analyzing **encrypted network traffic** using **Suricata IDS** integrated with **Python-based scripts**. Since payload inspection is not possible for encrypted traffic, this project relies on **metadata, flow behavior, TLS handshake features, and statistical patterns** to identify suspicious or malicious activity.
+This project implements a **fully automated encrypted traffic analysis pipeline** using **Python scripts**, **TShark**, and **Suricata IDS**.
 
-The goal is to demonstrate how effective security monitoring can still be performed even when traffic is encrypted.
+All major tasks are handled programmatically:
+1. Network traffic is captured using TShark via Python.
+2. The captured PCAP is analyzed using Suricata, triggered by Python.
+3. Suricata logs are parsed and analyzed using Python scripts.
+4. A central controller script manages and coordinates the entire workflow.
+
+Since encrypted traffic does not allow payload inspection, the analysis is based on **metadata, flow behavior, TLS handshake features, and statistical patterns**.
 
 ---
 
-## Features
-- Encrypted traffic monitoring using Suricata
-- Custom Suricata rules for TLS/SSL traffic
-- Python scripts for log parsing and analysis
-- Detection based on flow behavior and metadata
-- Automated extraction of indicators from Suricata logs
-- Modular and extensible architecture
+## Key Features
+- Fully automated traffic capture using TShark (via Python)
+- Programmatic execution of Suricata on captured traffic
+- Encrypted traffic analysis without decryption
+- Python-based parsing and behavioral analysis of Suricata logs
+- Central controller script for end-to-end orchestration
+- Modular and extensible script-based design
 
 ---
 
 ## Tech Stack
+- **Python 3** – Automation, orchestration, and analysis
+- **TShark** – Network traffic capture
 - **Suricata** – Intrusion Detection System
-- **Python 3** – Log parsing, analysis, and automation
-- **TLS/SSL Analysis** – JA3 fingerprints, SNI, certificate metadata
-- **Linux** – Deployment and testing environment
+- **TLS/SSL Metadata Analysis** – JA3, SNI, certificate information
+- **Linux** – Execution and testing environment
 
 ---
 
 ## Project Structure
-Encrypted-Traffic-Analysis-using-Suricata/
-│
-├── suricata/
-│ ├── rules/ # Custom Suricata rules
-│ └── suricata.yaml # Suricata configuration
-│
-├── scripts/
-│ ├── parser.py # Parses Suricata eve.json logs
-│ ├── analyzer.py # Traffic behavior analysis
-│ └── utils.py # Helper functions
-│
-├── logs/
-│ └── eve.json # Suricata output logs
-│
-├── requirements.txt
-└── README.md
-
 
 ---
 
-## How It Works
-1. Suricata monitors live or captured network traffic.
-2. TLS/SSL metadata is extracted (SNI, JA3, certificate info).
-3. Python scripts parse Suricata `eve.json` logs.
-4. Traffic patterns are analyzed to detect anomalies.
-5. Alerts and insights are generated based on behavioral analysis.
+## Automated Workflow
+1. **Traffic Capture**  
+   `wireshark_capture.py` uses TShark to capture live encrypted network traffic and saves it as a PCAP file.
+
+2. **Suricata Execution**  
+   `suricata_run.py` automatically feeds the captured PCAP file into Suricata using the configured ruleset.
+
+3. **Log Analysis**  
+   `analysis.py` parses Suricata’s `eve.json` logs and extracts TLS metadata and flow-based indicators.
+
+4. **Central Orchestration**  
+   `controller.py` manages the entire pipeline — executing capture, detection, and analysis sequentially.
 
 ---
 
-## Installation & Setup
-
-### Prerequisites
-- Linux (Ubuntu/Kali recommended)
-- Suricata installed and configured
-- Python 3.8+
-- Network traffic source (pcap or live interface)
+## How to Run the Project
 
 ### Install Dependencies
 ```bash
 pip install -r requirements.txt
+```
+### Run the Complete Pipeline
+```bash
+python3 scripts/controller.py
+```
+---
+
+## This single command:
+
+- Captures encrypted traffic
+- Runs Suricata on the captured data
+- Analyzes the results automatically
+
+## Use Cases
+
+- Encrypted traffic inspection without decryption
+- Malware command-and-control pattern detection
+- Blue team and SOC automation practice
+- Academic and cybersecurity research projects
+
+## Limitations
+
+- Payload inspection is not possible due to encryption
+- Detection accuracy depends on metadata quality and rule tuning
+- Requires appropriate permissions for packet capture
+
+## Future Enhancements
+
+- Machine learning–based encrypted traffic classification
+- Real-time monitoring mode
+- Visualization dashboard for analysis results
+- Integration with SIEM platforms
+
+## Disclaimer
+
+- This project is intended for educational and research purposes only.
+- Do not run packet capture or IDS tools on networks without proper authorization.
+
+# Workflow Structure
+
+## Overview
+The workflow of this project is designed as a **script-driven automated pipeline**, where each stage is handled by a dedicated Python script. The entire process—from traffic capture to analysis—is coordinated by a central controller, ensuring consistency, repeatability, and minimal manual intervention.
+
+---
+
+## Workflow Architecture
+
+Controller Script (controller.py)  
+↓  
+Traffic Capture Script (capture_traffic.py)  
+↓  
+Suricata Execution Script (run_suricata.py)  
+↓  
+Log Analysis Script (analyze_logs.py)
+
+---
+
+## Step-by-Step Workflow
+
+### 1. Traffic Capture
+The workflow begins with `capture_traffic.py`.  
+This script uses **TShark** to capture live network traffic from a specified interface. The captured data is saved as a **PCAP file**, which serves as the input for the detection stage.
+
+Key Responsibilities:
+- Start and stop packet capture programmatically
+- Capture encrypted traffic
+- Store traffic in PCAP format
+
+---
+
+### 2. Suricata Processing
+Once traffic capture is complete, the controller triggers `run_suricata.py`.  
+This script runs **Suricata** on the captured PCAP file using predefined configuration and rules.
+
+Key Responsibilities:
+- Execute Suricata via Python
+- Apply custom IDS rules
+- Generate structured logs (eve.json)
+
+---
+
+### 3. Log Analysis
+The `analyze_logs.py` script processes Suricata’s output logs.  
+Since payloads are encrypted, the analysis focuses on **metadata, flow behavior, and TLS attributes**.
+
+Key Responsibilities:
+- Parse eve.json logs
+- Extract TLS handshake information
+- Analyze flow statistics and traffic patterns
+- Identify anomalies or suspicious behavior
+
+---
+
+### 4. Central Orchestration
+The entire workflow is controlled by `controller.py`.  
+This script ensures that each stage runs in the correct order and handles dependencies between tasks.
+
+Key Responsibilities:
+- Orchestrate all scripts
+- Maintain execution sequence
+- Enable one-command execution of the full pipeline
+
+---
+
+## Workflow Benefits
+- Fully automated execution
+- Modular and maintainable design
+- Easy debugging and testing of individual stages
+- Scalable for future enhancements
+- Suitable for academic, research, and SOC automation use cases
+
+---
+
+## Execution Flow Summary
+1. Controller initiates the workflow  
+2. Traffic is captured using TShark  
+3. Captured traffic is analyzed by Suricata  
+4. Logs are parsed and analyzed using Python  
+5. Results are generated for further investigation  
+
+---
+
+## Extensibility
+The workflow is designed to be easily extendable. Additional stages, such as real-time monitoring, machine learning-based classification, or visualization, can be integrated without disrupting the existing pipeline.
