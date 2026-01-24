@@ -97,7 +97,7 @@ python3 scripts/controller.py
 # Workflow Structure
 
 ## Overview
-The workflow of this project is designed as a **script-driven automated pipeline**, where each stage is handled by a dedicated Python script. The entire process—from traffic capture to analysis—is coordinated by a central controller, ensuring consistency, repeatability, and minimal manual intervention.
+The workflow of this project is designed as a **script-driven automated pipeline**, where a dedicated Python script handles each stage. The entire process—from traffic capture to analysis—is coordinated by a central controller, ensuring consistency, repeatability, and minimal manual intervention.
 
 ---
 
@@ -116,7 +116,7 @@ Log Analysis Script (analyze_logs.py)
 ## Step-by-Step Workflow
 
 ### 1. Traffic Capture
-The workflow begins with `capture_traffic.py`.  
+The workflow begins with `wireshark_capture.py`.  
 This script uses **TShark** to capture live network traffic from a specified interface. The captured data is saved as a **PCAP file**, which serves as the input for the detection stage.
 
 Key Responsibilities:
@@ -127,7 +127,7 @@ Key Responsibilities:
 ---
 
 ### 2. Suricata Processing
-Once traffic capture is complete, the controller triggers `run_suricata.py`.  
+Once traffic capture is complete, the controller triggers `suricata_run.py`.  
 This script runs **Suricata** on the captured PCAP file using predefined configuration and rules.
 
 Key Responsibilities:
@@ -138,7 +138,7 @@ Key Responsibilities:
 ---
 
 ### 3. Log Analysis
-The `analyze_logs.py` script processes Suricata’s output logs.  
+The `analysis.py` script processes Suricata’s output logs.  
 Since payloads are encrypted, the analysis focuses on **metadata, flow behavior, and TLS attributes**.
 
 Key Responsibilities:
