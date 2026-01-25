@@ -10,7 +10,7 @@ import sys
 
 print("\n=== SURICATA IDS MODULE ===")
 
-interface = input("Enter interface (e.g. eth0 / wlan0): ").strip()
+interface = input("Enter interface (e.g. eth0 / wlan0 / usb0): ").strip()
 runtime = input("Enter Suricata run time (seconds): ").strip()
 
 if not runtime.isdigit():
@@ -45,4 +45,5 @@ else:
     print("[!] Suricata ran, but no traffic was captured")
     print("[!] Ensure HTTPS traffic during runtime")
     sys.exit(0)
+
 
