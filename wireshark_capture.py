@@ -9,7 +9,7 @@ import sys
 
 print("\n=== WIRESHARK CAPTURE MODULE ===")
 
-interface = input("Enter interface (e.g. wlan0 / eth0): ").strip()
+interface = input("Enter interface (e.g. wlan0 / eth0 / usb0): ").strip()
 duration = input("Enter capture duration (seconds): ").strip()
 
 if not duration.isdigit():
@@ -37,4 +37,5 @@ try:
 except subprocess.CalledProcessError:
     print("[!] Wireshark capture failed")
     sys.exit(1)
+
 
