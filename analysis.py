@@ -1,6 +1,6 @@
 """
 Offline Analysis Module
-Safely analyzes TLS metadata from Suricata logs
+Performs TLS metadata analysis based on controller input
 """
 
 import json
@@ -13,18 +13,17 @@ EVE = "project_output/suricata_logs/eve.json"
 OUTDIR = "project_output/analysis"
 os.makedirs(OUTDIR, exist_ok=True)
 
+if len(sys.argv) < 2:
+    print("[!] No analysis option provided")
+    sys.exit(1)
+
+analysis_option = sys.argv[1]
+
 if not os.path.exists(EVE):
     print("[!] Suricata log file not found")
     sys.exit(1)
 
-print("\n=== ANALYSIS MODULE ===")
-print("1. Show TLS versions")
-print("2. Show anomaly counts")
-print("3. Generate TLS version graph")
-
-choice = input("Select option: ").strip()
-
-# ---------------- PARSE SURICATA LOG ----------------
+# -------- Parse Suricata TLS Logs --------
 records = []
 
 with open(EVE) as f:
@@ -48,32 +47,31 @@ if not records:
 
 df = pd.DataFrame(records)
 
-# ---------------- SAFE COLUMN HANDLING ----------------
-for col in ["sni", "issuer", "subject", "tls_version"]:
+# Safe column handling
+for col in ["tls_version", "sni", "issuer", "subject"]:
     if col not in df.columns:
         df[col] = None
 
 df["missing_sni"] = df["sni"].isna()
 df["self_signed"] = df["issuer"] == df["subject"]
 
-# ---------------- USER OPTIONS ----------------
-if choice == "1":
-    print("\nTLS Version Distribution:\n")
+# -------- Analysis Options --------
+if analysis_option == "1":
+    print("\n=== TLS VERSION DISTRIBUTION ===\n")
     print(df["tls_version"].value_counts())
 
-elif choice == "2":
-    print("\nAnomaly Summary:\n")
+elif analysis_option == "2":
+    print("\n=== ANOMALY SUMMARY ===\n")
     print("Missing SNI:", int(df["missing_sni"].sum()))
     print("Self-signed certificates:", int(df["self_signed"].sum()))
 
-elif choice == "3":
+elif analysis_option == "3":
     df["tls_version"].value_counts().plot(kind="bar")
     plt.title("TLS Version Distribution")
     plt.tight_layout()
     plt.savefig(f"{OUTDIR}/tls_versions.png")
     plt.show()
-    print(f"[✓] Graph saved in {OUTDIR}")
+    print(f"[✓] Graph saved to {OUTDIR}/tls_versions.png")
 
 else:
-    print("Invalid option selected")
-
+    print("[!] Invalid analysis option")
