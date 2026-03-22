@@ -46,6 +46,7 @@ Because this tool natively hooks into your operating system's firewall, we have 
 ```text
 Encrypted-Traffic-Analysis-using-Suricata/
 │
+├── run.sh                 # 1-Click Automated Pipeline Runner
 ├── controller.py          # Master CLI Orchestrator
 ├── wireshark_capture.py   # Traffic Tracking module
 ├── suricata_run.py        # Suricata execution & IPS Prevention module
