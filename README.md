@@ -1,32 +1,44 @@
-# Encrypted-Traffic-Analysis-using-Suricata
+# 🛡️ Encrypted-Traffic-Analysis-using-Suricata
 
-## Overview
-This project provides an advanced **Intrusion Prevention System (IPS)** and **Dynamic Firewall Automation** toolkit for analyzing and mitigating anomalous encrypted network traffic. Since deep packet inspection is impossible on encrypted payloads, this project heavily relies on **flow behavior, TLS handshake metadata, JA3 fingerprints, and Unsupervised Machine Learning** to reliably detect and neutralize threats.
+![Python](https://img.shields.io/badge/Python-3.8%2B-blue)
+![Suricata](https://img.shields.io/badge/Suricata-IDS%2FIPS-red)
+![Machine Learning](https://img.shields.io/badge/ML-Isolation%20Forest-orange)
+![Firewall](https://img.shields.io/badge/Firewall-IPTables-lightgrey)
 
-The pipeline executes a definitive **Track, Prevent, Block** methodology:
-1. **TRACK (ML Engine):** Captures traffic and analyzes network flows using Scikit-Learn's Isolation Forest to track anomalies in volume/duration ratios.
-2. **PREVENT (Inline IPS):** Runs Suricata natively in inline NFQUEUE mode to intercept packets and immediately drop malicious handshakes matching specific rules.
-3. **BLOCK (Dynamic Firewall):** Extracts hostile IPs from the ML anomaly detector and automatically injects strict `iptables DROP` rules to permanently sever the connections.
+## 📌 Overview
+This project provides an advanced, battle-tested **Intrusion Prevention System (IPS)** and **Dynamic Firewall Automation** toolkit. Since deep packet inspection is impossible on fully encrypted payloads, this engine heavily relies on **flow behavior, TLS handshake metadata, JA3 fingerprints, and Unsupervised Machine Learning** to actively track, neutralize, and block encrypted threats.
 
----
+## 🚀 The Track, Prevent, Block Engine
+We execute a definitive 3-stage defense methodology:
 
-## 🚀 Features
-- **Track, Prevent, Block Methodology**
-- **Suricata Inline IPS Support** (NFQUEUE manipulation)
-- **Machine Learning Flow Analysis** using Isolation Forest (`scikit-learn`)
-- **JA3 & JA3s Fingerprinting** for identifying unique malicious clients
-- **Interactive HTML Reporting** powered by Plotly for live dashboarding
-- **Completely automated CLI Controller** built with `argparse`
+1. **TRACK (ML Subsystem):** Captures traffic and utilizes Scikit-Learn's *Isolation Forest* to algorithmically detect anomalous volume/duration flow ratios.
+2. **PREVENT (Inline IPS):** Runs Suricata natively in inline `NFQUEUE` mode, intercepting packets and immediately dropping handshakes matching known malicious signatures.
+3. **BLOCK (Dynamic Firewall):** Extracts hostile IPs from the ML anomaly detector and automatically injects strict `iptables DROP` rules to permanently sever their host connections.
 
----
+### 🏗 Architecture Flow
+```mermaid
+graph TD;
+    Net[Live Network Traffic] --> Capture[Wireshark Tracker];
+    Net --> Firewall[IPTables NFQUEUE];
+    Firewall --> Suricata{Suricata IPS Engine};
+    Suricata -- Alert/Pass --> Analysis[ML Flow Tracking];
+    Suricata -- Drop Rule Matched --> Drop[Sever Handshake Packet];
+    Analysis -- Anomaly Detected --> Blocker[Extract Hostile IP];
+    Blocker -- Inject DROP Rule --> Firewall;
+```
 
-## 🛠 Tech Stack
+## 🛠 Tech Stack & Failsafes
 - **Python 3.8+** (CLI, Orchestration, Analysis)
 - **Suricata** (IDS/IPS Engine)
-- **Wireshark (tshark)** (Packet Capture)
-- **Scikit-Learn & Pandas** (Machine Learning & Data Processing)
-- **Plotly** (Interactive Web Reports)
+- **Scikit-Learn & Pandas** (Machine Learning Tracking)
 - **IPTables / NFQUEUE** (Active Firewall Blocking)
+- **Plotly** (Interactive Web Dashboard)
+
+### 🛡️ Iron-Clad Reliability
+Because this tool natively hooks into your operating system's firewall, we have engineered aggressive safety tolerances:
+- **Bulletproof Cleanups:** Even if the capture abruptly terminates or crashes, strictly bound `atexit` routines guarantee all `iptables` constraints are cleanly scrubbed. *No permanent network lockouts.*
+- **Pre-Flight Sanity Checks:** The controller audits system requirements (`tshark`, `suricata`, `iptables`) before allowing operation execution.
+- **Resilient Parsing:** ML ingestion safely bypasses incomplete or corrupted Suricata `eve.json` records.
 
 ---
 
@@ -40,25 +52,15 @@ Encrypted-Traffic-Analysis-using-Suricata/
 ├── analysis.py            # ML Anomaly Detection & IPTables Blocking module
 │
 ├── requirements.txt       # Python dependencies
-├── README.md              # Documentation
-│
-├── suricata/
-│   └── rules/             # Dynamically generated Suricata Drop/Alert rules
-│
-└── project_output/        # Auto-generated outputs
-    ├── captures/          # Saved .pcap files
-    ├── suricata_logs/     # Suricata eve.json output
-    └── analysis/          # Interactive HTML Reports
+└── project_output/        # Auto-generated outputs (Logs & HTML Reports)
 ```
-
----
 
 ## ⚙️ Installation & Setup
 
 ### Prerequisites
 - Linux Environment (Ubuntu / Debian / Kali recommended)
-- `sudo` privileges (required for `iptables` and NFQUEUE manipulation)
-- Suricata & TShark installed:
+- `sudo` privileges (required for `iptables` and NFQUEUE routing)
+- Core binaries installed:
   ```bash
   sudo apt-get update
   sudo apt-get install suricata tshark python3-pip -y
@@ -73,22 +75,22 @@ pip3 install -r requirements.txt
 
 ## 🚦 How to Use (The Controller)
 
-The entire project has been consolidated into a master controller script. You can run individual modules or execute the entire Track, Prevent, Block pipeline automatically.
+The entire project has been consolidated into a master orchestrated CLI. 
 
 ### Run the Full Active Pipeline
-To capture traffic, run Suricata inline (IPS mode), perform ML analysis, actively block anomalous IPs, and generate an HTML report:
+To run Suricata inline (IPS mode), perform ML analysis, actively block anomalous IPs, and generate the final HTML report:
 ```bash
 python3 controller.py --all --interface eth0 --duration 60
 ```
-> **Note:** Generate HTTPS traffic (e.g. browsing or `curl`) during the capture phase!
+> **Note:** Generate HTTPS traffic (`curl https://example.com` or web browsing) while the script is listening to feed the Machine Learning tracker!
 
-### CLI Options
+### 💡 CLI Options
 ```text
 options:
-  -h, --help            show this help message and exit
+  -h, --help            Show help message
   --capture             Run Wireshark capture (Track)
-  --interface INTERFACE Network interface (Default: eth0)
-  --duration DURATION   Capture/Suricata duration in seconds (Default: 30)
+  --interface IFACE     Network interface (Default: eth0)
+  --duration SECS       Capture/Suricata duration (Default: 30)
   --suricata            Run Suricata engine
   --ips                 Run Suricata directly in Inline IPS Mode (Prevent)
   --analyze             Run ML Analysis and generate HTML report (Track)
@@ -98,18 +100,17 @@ options:
 
 ---
 
-## 📊 The Interactive Report
-After the pipeline finishes, an interactive HTML dashboard is compiled at:
+## 📊 The Interactive Dashboard
+After the command completes, an interactive HTML dashboard is generated at:
 `project_output/analysis/report.html`
 
-The dashboard displays:
-- Total connections and identified Machine Learning anomalies.
-- Plotly interactive graphs mapping Server vs Client byte exchanges for Anomalous connections.
-- TLS version distributions.
-- Top JA3 and JA3s fingerprints.
-- A table documenting which specific IP Addresses were targeted by automated `iptables DROP` firewall rules.
+The comprehensive dossier features:
+- **Active Summary:** Total connections vs active Blocked ML Anomalies.
+- **Plotly Flow Map:** Interactive scatter mapping Server vs Client byte exchanges for severed anomalous connections.
+- **TLS Metadata:** TLS version distributions & Top JA3 fingerprints chart.
+- **Firewall Hitlist:** A table documenting the specific IP Addresses successfully banished by automated firewall logic.
 
 ---
 
 ## ⚠️ Disclaimer
-Running the `--all` or `--ips` flags will intentionally disrupt ongoing network flows by altering `iptables` rules and hooking traffic into `NFQUEUE`. This engine is designed for active disruption of network traffic. Run in a controlled testing environment, as the Machine Learning engine may permanently block legitimate IP addresses if they exhibit extreme flow anomalies.
+Running the `--all` or `--ips` flags will immediately hook traffic into Linux `NFQUEUE`. This engine is designed for active disruption of hostile network traffic. Run in a controlled testing environment, as the Machine Learning engine dynamically permanently drops traffic from sources if they exhibit extreme volume flow anomalies.
