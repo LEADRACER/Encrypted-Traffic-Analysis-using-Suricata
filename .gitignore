@@ -1,0 +1,5 @@
+project_output/
+__pycache__/
+suricata/rules/
+*.pyc
+.DS_Store
