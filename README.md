@@ -77,14 +77,18 @@ pip3 install -r requirements.txt
 
 The entire project has been consolidated into a master orchestrated CLI. 
 
-### Run the Full Active Pipeline
-To run Suricata inline (IPS mode), perform ML analysis, actively block anomalous IPs, and generate the final HTML report:
+### The 1-Click Automated Runner (Recommended)
+You can automate the entire **Track, Prevent, Block** active pipeline simply by executing the bundled bash script. The script automatically detects your active network interface, ensures all python dependencies are installed, and runs the core python ML / IPS orchestrator.
+
 ```bash
-python3 controller.py --all --interface eth0 --duration 60
+sudo chmod +x run.sh
+sudo ./run.sh 60
 ```
+*(The `60` parameter represents the capture duration in seconds. The script defaults to 60 if left blank).*
+
 > **Note:** Generate HTTPS traffic (`curl https://example.com` or web browsing) while the script is listening to feed the Machine Learning tracker!
 
-### 💡 CLI Options
+### Manual CLI Options (Python Controller)
 ```text
 options:
   -h, --help            Show help message
