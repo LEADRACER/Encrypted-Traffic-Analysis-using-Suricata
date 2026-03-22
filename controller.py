@@ -1,21 +1,39 @@
 """
 Master Controller Script
-Controls Track, Prevent, Block project workflow
+Controls Track, Prevent, Block project workflow with pre-flight safety checks
 """
 
 import argparse
 import subprocess
 import sys
+import shutil
+
+def check_dependencies():
+    missing = []
+    for tool in ["tshark", "suricata", "iptables", "python3"]:
+        if not shutil.which(tool):
+            missing.append(tool)
+    if missing:
+        print(f"[!] FATAL Error: Missing required system dependencies: {', '.join(missing)}")
+        print("[!] Please install them (e.g., `sudo apt install suricata tshark`) before running the controller.")
+        sys.exit(1)
 
 def run(cmd):
     try:
         subprocess.run(cmd, check=True)
-    except subprocess.CalledProcessError:
-        print(f"[!] Error running command: {' '.join(cmd)}")
+    except subprocess.CalledProcessError as e:
+        print(f"[!] Error running module: {' '.join(cmd)}")
+        print(f"[!] Exit Code: {e.returncode}")
+        sys.exit(1)
+    except KeyboardInterrupt:
+        print("\n[!] Execution interrupted by user.")
         sys.exit(1)
 
 def main():
-    parser = argparse.ArgumentParser(description="Track, Prevent, Block Encrypted Traffic Controller")
+    # Execute safety checks first
+    check_dependencies()
+    
+    parser = argparse.ArgumentParser(description="Reliable Track, Prevent, Block Traffic Controller")
     parser.add_argument("--capture", action="store_true", help="Run Wireshark capture (Track)")
     parser.add_argument("--interface", type=str, default="eth0", help="Network interface")
     parser.add_argument("--duration", type=int, default=30, help="Capture/Suricata duration (seconds)")
@@ -37,11 +55,9 @@ def main():
     print("\n===== ADVANCED PROJECT CONTROLLER =====")
 
     if args.all or args.capture:
-        # Phase 1: Track & Capture
         run([sys.executable, "wireshark_capture.py", "--interface", args.interface, "--duration", str(args.duration)])
     
     if args.all or args.suricata:
-        # Phase 2: Prevent (via --ips flag + Rules)
         cmd = [sys.executable, "suricata_run.py", "--interface", args.interface, "--duration", str(args.duration)]
         if args.ips or args.all:
             print("[*] Enabling PREVENT functionality (IPS)...")
@@ -49,14 +65,13 @@ def main():
         run(cmd)
     
     if args.all or args.analyze:
-        # Phase 3: Track Context & Block Actively
         cmd = [sys.executable, "analysis.py"]
         if args.block or args.all:
             print("[*] Enabling BLOCK functionality (Firewall ML response)...")
             cmd.append("--block")
         run(cmd)
         
-    print("\n[✓] Selected operations completed successfully.")
+    print("\n[✓] Reliable operations completed successfully.")
 
 if __name__ == "__main__":
     main()
