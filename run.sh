@@ -12,7 +12,7 @@ if [ "$EUID" -ne 0 ]; then
 fi
 
 echo "[*] 1. Ensuring Python dependencies are installed..."
-pip3 install -r requirements.txt -q
+pip3 install -r requirements.txt -q --break-system-packages 2>/dev/null || pip3 install -r requirements.txt -q
 
 # Auto-detect active internet-facing network interface
 DEFAULT_IFACE=$(ip route get 8.8.8.8 2>/dev/null | awk '{print $5; exit}')

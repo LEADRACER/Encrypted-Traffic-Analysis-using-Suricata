@@ -81,12 +81,18 @@ def main():
             proc.wait(timeout=args.duration)
         except subprocess.TimeoutExpired:
             proc.terminate()
-            proc.wait(timeout=5)
+            try:
+                proc.wait(timeout=5)
+            except subprocess.TimeoutExpired:
+                proc.kill()
     except KeyboardInterrupt:
         print("\n[!] User aborted execution manually.")
         if 'proc' in locals():
             proc.terminate()
-            proc.wait(timeout=5)
+            try:
+                proc.wait(timeout=5)
+            except subprocess.TimeoutExpired:
+                proc.kill()
         sys.exit(1)
 
     eve_file = f"{OUTDIR}/eve.json"

@@ -108,10 +108,12 @@ def apply_firewall_blocks(flow_df):
     print("\n[*] ACTIVE RESPONSE: Analyzing IP addresses for blocking...")
     ips_to_block = set()
     for _, row in anomalies.iterrows():
-        if pd.notna(row.get('src_ip')) and str(row['src_ip']) not in ['127.0.0.1', '::1', 'None', 'NaN']:
-            ips_to_block.add(row['src_ip'])
-        if pd.notna(row.get('dest_ip')) and str(row['dest_ip']) not in ['127.0.0.1', '::1', 'None', 'NaN']:
-            ips_to_block.add(row['dest_ip'])
+        src = row.get('src_ip')
+        dst = row.get('dest_ip')
+        if pd.notna(src) and str(src) not in ['127.0.0.1', '::1', 'None', 'NaN']:
+            ips_to_block.add(src)
+        if pd.notna(dst) and str(dst) not in ['127.0.0.1', '::1', 'None', 'NaN']:
+            ips_to_block.add(dst)
             
     for ip in ips_to_block:
         print(f"[!] BLOCKING ANOMALOUS IP: {ip}")
