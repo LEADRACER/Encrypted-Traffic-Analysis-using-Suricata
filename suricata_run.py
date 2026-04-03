@@ -1,4 +1,4 @@
-"""
+
 Suricata IDS/IPS Module
 Captures live traffic with absolute fallback signal handling for NFQUEUE safety.
 """
@@ -25,7 +25,7 @@ def setup_nfq():
         sys.exit(1)
 
 def cleanup_nfq():
-    """ Runs unequivocally on exit avoiding frozen outbound traffic on the host """
+    """Runs unequivocally on exit avoiding frozen outbound traffic on the host"""
     global nfq_active
     if nfq_active:
         print("\n[*] SAFETY CLEANUP: Aggressively stripping NFQUEUE iptables rules...")
@@ -39,7 +39,7 @@ def cleanup_nfq():
 
 def signal_handler(signum, frame):
     print(f"\n[!] Caught Signal {signum}. Triggering graceful shutdown...")
-    sys.exit(0) # Triggers atexit safely
+    sys.exit(0)  # Triggers atexit safely
 
 # Bind safety nets
 atexit.register(cleanup_nfq)
@@ -74,10 +74,12 @@ def main():
     else:
         cmd = ["sudo", "suricata", "-i", args.interface, "-l", OUTDIR, "-S", rule_file]
 
+    # FIX: proc initialized to None before Popen so KeyboardInterrupt handler
+    # doesn't crash with NameError if Popen itself fails before proc is assigned
+    proc = None
     try:
         proc = subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         try:
-            # Replaced time.sleep with strict process monitoring
             proc.wait(timeout=args.duration)
         except subprocess.TimeoutExpired:
             proc.terminate()
@@ -87,7 +89,7 @@ def main():
                 proc.kill()
     except KeyboardInterrupt:
         print("\n[!] User aborted execution manually.")
-        if 'proc' in locals():
+        if proc is not None:
             proc.terminate()
             try:
                 proc.wait(timeout=5)
