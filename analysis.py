@@ -51,10 +51,8 @@ def parse_eve(eve_file):
                     })
                     
             except json.JSONDecodeError:
-                # Reliability upgrade: silently continue on malformed JSON instead of crashing
                 continue
-            except Exception as e:
-                # Failsafe for unexpected structural issues in valid JSON logs
+            except Exception:
                 continue
                 
     return pd.DataFrame(tls_records), pd.DataFrame(flow_records)
@@ -73,12 +71,13 @@ def detect_anomalies(flow_df):
 
     features = ['bytes_toclient', 'bytes_toserver', 'pkts_toclient', 'pkts_toserver', 'age']
     
-    # Ensure columns exist even if dataset is weird
     for f in features:
         if f not in flow_df.columns:
             flow_df[f] = 0
 
-    X = flow_df[features].fillna(0).apply(pd.to_numeric, errors='coerce').fillna(0)
+    X = flow_df[features].fillna(0)
+    for col in X.columns:
+        X[col] = pd.to_numeric(X[col], errors='coerce').fillna(0)
     
     if len(X) < 5:
         flow_df['anomaly'] = 1  
@@ -131,7 +130,6 @@ def generate_report(tls_df, flow_df, outdir):
         import plotly.express as px
         import plotly.io as pio
         
-        # ... Report generation remains visually similar but safely catches empty DF ...
         if not tls_df.empty and 'tls_version' in tls_df.columns:
             tls_fig = px.pie(tls_df, names='tls_version', title='TLS Version Distribution')
             tls_html = pio.to_html(tls_fig, full_html=False)
@@ -144,7 +142,10 @@ def generate_report(tls_df, flow_df, outdir):
             tls_html = "<p>No parsable TLS records found.</p>"
             ja3_html = ""
 
-        if not flow_df.empty and 'anomaly' in flow_df.columns:
+        # FIX: Use 'anomaly' column directly instead of flow_df.get() which is a dict method, not DataFrame method
+        has_anomaly_col = not flow_df.empty and 'anomaly' in flow_df.columns
+
+        if has_anomaly_col:
             anomalies = flow_df[flow_df['anomaly'] == -1].copy()
             if not anomalies.empty:
                 display_cols = [c for c in ['timestamp', 'src_ip', 'dest_ip', 'dest_port', 'bytes_toclient', 'bytes_toserver', 'anomaly_score'] if c in anomalies.columns]
@@ -159,6 +160,9 @@ def generate_report(tls_df, flow_df, outdir):
         else:
             anomalies_html = "<p>No usable flow records for ML modeling detected.</p>"
             scatter_html = ""
+
+        # FIX: Use has_anomaly_col guard instead of flow_df.get('anomaly', 1) which crashes on DataFrame
+        num_blocked = len(flow_df[flow_df['anomaly'] == -1]) if has_anomaly_col else 0
 
         html_content = f"""
         <html>
@@ -194,7 +198,7 @@ def generate_report(tls_df, flow_df, outdir):
                 </div>
                 <div class="stat-box">
                     <h3>Anomalies Blocked Firewall-side</h3>
-                    <p>{len(flow_df[flow_df.get('anomaly', 1) == -1]) if not flow_df.empty else 0}</p>
+                    <p>{num_blocked}</p>
                 </div>
             </div>
             
