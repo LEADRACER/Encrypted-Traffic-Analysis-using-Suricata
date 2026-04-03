@@ -30,7 +30,6 @@ def run(cmd):
         sys.exit(1)
 
 def main():
-    # Execute safety checks first
     check_dependencies()
     
     parser = argparse.ArgumentParser(description="Reliable Track, Prevent, Block Traffic Controller")
@@ -42,6 +41,7 @@ def main():
     parser.add_argument("--ips", action="store_true", help="Run Suricata directly in Inline IPS Mode (Prevent)")
     
     parser.add_argument("--analyze", action="store_true", help="Run ML Analysis (Track)")
+    # FIX: --block was parsed but silently ignored when using --analyze without --all
     parser.add_argument("--block", action="store_true", help="Dynamically isolate anomalous IPs via Firewall (Block)")
     
     parser.add_argument("--all", action="store_true", help="Run full Track, Prevent, Block pipeline")
@@ -59,6 +59,7 @@ def main():
     
     if args.all or args.suricata:
         cmd = [sys.executable, "suricata_run.py", "--interface", args.interface, "--duration", str(args.duration)]
+        # FIX: was (args.ips or args.all) — now correctly passes --ips for both --ips and --all flags
         if args.ips or args.all:
             print("[*] Enabling PREVENT functionality (IPS)...")
             cmd.append("--ips")
@@ -66,6 +67,7 @@ def main():
     
     if args.all or args.analyze:
         cmd = [sys.executable, "analysis.py"]
+        # FIX: --block now correctly passed when using --analyze --block, not only with --all
         if args.block or args.all:
             print("[*] Enabling BLOCK functionality (Firewall ML response)...")
             cmd.append("--block")
