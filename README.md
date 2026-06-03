@@ -6,7 +6,7 @@
 ![Firewall](https://img.shields.io/badge/Firewall-IPTables-lightgrey)
 
 ## 📌 Overview
-This project provides an advanced, battle-tested **Intrusion Prevention System (IPS)** and **Dynamic Firewall Automation** toolkit. Since deep packet inspection is impossible on fully encrypted payloads, this engine heavily relies on **flow behavior, TLS handshake metadata, JA3 fingerprints, and Unsupervised Machine Learning** to actively track, neutralize, and block encrypted threats.
+This project provides an advanced, battle-tested **Intrusion Prevention System (IPS)** and **Dynamic Firewall Automation** toolkit. Since deep packet inspection is impossible on fully encrypted payloads, this engine heavily relies on **flow behavior, TLS handshake metadata, JA3 fingerprints, and Unsupervised Machine Learning** to actively track, neutralize, and block encrypted threats. Additionally, it includes **real-time alerting** for immediate notification of detected threats.
 
 ## 🚀 The Track, Prevent, Block Engine
 We execute a definitive 3-stage defense methodology:
@@ -74,12 +74,43 @@ pip3 install -r requirements.txt
 
 ---
 
-## 🚦 How to Use (The Controller)
+## 🚦 How to Use (Dashboard Control)
 
-The entire project has been consolidated into a master orchestrated CLI. 
+The system is now controlled through an interactive web dashboard that provides full pipeline control capabilities.
 
-### The 1-Click Automated Runner (Recommended)
-You can automate the entire **Track, Prevent, Block** active pipeline simply by executing the bundled bash script. The script automatically detects your active network interface, ensures all python dependencies are installed, and runs the core python ML / IPS orchestrator.
+### Starting the Dashboard
+To start the dashboard with full pipeline control:
+
+```bash
+cd dashboard
+python3 server.py [options]
+```
+
+### Dashboard Options
+The dashboard server accepts the same options as the original controller:
+- `--interface IFACE`: Network interface (Default: eth0)
+- `--duration SECS`: Capture/Suricata duration (seconds)
+- `--realtime`: Run in continuous real-time mode
+- `--rotate-interval SECS`: Capture file rotation interval (seconds)
+- `--max-files NUM`: Max capture files to keep
+- `--ips`: Run Suricata in Intrusion Prevention System (Inline) mode
+- `--block`: Enable dynamic IP blocking
+- `--analyze-interval SECS`: Analysis polling interval (seconds)
+- `--capture`: Run Wireshark capture
+- `--suricata`: Run Suricata engine
+- `--analyze`: Run ML Analysis
+- `--all`: Run full Track, Prevent, Block pipeline
+
+### Using the Dashboard Interface
+Once the dashboard is running at `http://localhost:8080`:
+
+1. **Configure Pipeline**: Use the controls panel to select which components to run
+2. **Start Pipeline**: Click the "Start Pipeline" button to begin monitoring
+3. **Monitor**: Watch real-time statistics, events, and charts update
+4. **Stop Pipeline**: Click the "Stop Pipeline" button when finished
+
+### The 1-Click Automated Runner (Still Available)
+You can still use the original automated runner script:
 
 ```bash
 sudo chmod +x run.sh
@@ -87,21 +118,7 @@ sudo ./run.sh 60
 ```
 *(The `60` parameter represents the capture duration in seconds. The script defaults to 60 if left blank).*
 
-> **Note:** Generate HTTPS traffic (`curl https://example.com` or web browsing) while the script is listening to feed the Machine Learning tracker!
-
-### Manual CLI Options (Python Controller)
-```text
-options:
-  -h, --help            Show help message
-  --capture             Run Wireshark capture (Track)
-  --interface IFACE     Network interface (Default: eth0)
-  --duration SECS       Capture/Suricata duration (Default: 30)
-  --suricata            Run Suricata engine
-  --ips                 Run Suricata directly in Inline IPS Mode (Prevent)
-  --analyze             Run ML Analysis and generate HTML report (Track)
-  --block               Dynamically isolate anomalous IPs via Firewall (Block)
-  --all                 Run full Track, Prevent, Block pipeline
-```
+> **Note:** Generate HTTPS traffic (`curl https://example.com` or web browsing) while the system is listening to feed the Machine Learning tracker!
 
 ---
 

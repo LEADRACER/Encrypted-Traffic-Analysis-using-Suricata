@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Encrypted Traffic Analysis Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Encrypted Traffic Analysis Dashboard</h1>
+            <div class="status-indicator">
+                <span id="status">Disconnected</span>
+                <span id="last-update">Last update: Never</span>
+            </div>
+        </header>
+        
+        <!-- Pipeline Controls -->
+        <section class="controls-panel">
+            <h2>Pipeline Controls</h2>
+            <div class="controls-grid">
+                <div class="control-group">
+                    <label for="interface">Interface:</label>
+                    <input type="text" id="interface" value="eth0">
+                </div>
+                <div class="control-group">
+                    <label for="duration">Duration (sec):</label>
+                    <input type="number" id="duration" value="60">
+                </div>
+                <div class="control-group">
+                    <label><input type="checkbox" id="realtime"> Real-time Mode</label>
+                </div>
+                <div class="control-group">
+                    <label><input type="checkbox" id="ips"> IPS Mode (Prevention)</label>
+                </div>
+                <div class="control-group">
+                    <label><input type="checkbox" id="block"> Dynamic Blocking</label>
+                </div>
+                <div class="control-group">
+                    <label><input type="checkbox" id="analyze"> ML Analysis</label>
+                </div>
+                <div class="control-group">
+                    <label><input type="checkbox" id="capture"> Wireshark Capture</label>
+                </div>
+                <div class="control-group">
+                    <label><input type="checkbox" id="all"> Full Pipeline</label>
+                </div>
+                <div class="control-group">
+                    <button id="start-btn">Start Pipeline</button>
+                    <button id="stop-btn" disabled>Stop Pipeline</button>
+                </div>
+            </div>
+        </section>
+        
+        <main>
+            <section class="stats-panel">
+                <h2>Traffic Statistics</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Total Events</h3>
+                        <p id="total-events">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Alerts</h3>
+                        <p id="alerts">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>DNS Queries</h3>
+                        <p id="dns-queries">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>HTTP Flows</h3>
+                        <p id="http-flows">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>TLS Sessions</h3>
+                        <p id="tls-sessions">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Blocked IPs</h3>
+                        <p id="blocked-ips">0</p>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="events-panel">
+                <h2>Recent Events</h2>
+                <div class="events-container" id="events-container">
+                    <div class="loading">Loading events...</div>
+                </div>
+            </section>
+            
+            <section class="charts-panel">
+                <h2>Traffic Analysis</h2>
+                <div class="charts-grid">
+                    <div class="chart-container">
+                        <canvas id="protocol-chart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="timeline-chart"></canvas>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
